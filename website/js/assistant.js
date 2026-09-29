@@ -1,16 +1,18 @@
+import jsYaml from 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/+esm';
+
 import { getCookie, saveRecipe } from "./cookies.js";
 import { SpeechListener } from "./speech.js";
 
 export const STATE = { IDLE: 0, LISTENING: 1, TALKING: 2 };
 
 export class Assistant {
-  constructor({ onStateChange, onOutputText, onError, onDispense, systemPrompt } = {}) {
+  constructor({ onStateChange, onOutputText, onError, onDispense, systemPromptPath } = {}) {
     this.state = STATE.IDLE;
     this.onStateChange = onStateChange || (() => {});
     this.onOutputText = onOutputText || (() => {});
     this.onError = onError || ((e) => console.error("[Assistant]", e));
     this.onDispense = onDispense || (() => {});
-    this.systemPrompt = systemPrompt || "";
+    this.systemPromptPath = systemPromptPath || "";
 
     this.speechListener = new SpeechListener({
       onTranscription: (text) => this._handleTranscription(text),
@@ -44,6 +46,9 @@ export class Assistant {
       this._setState(STATE.IDLE);
       return;
     }
+
+    this.systemPrompt = await this._loadPrompt('./assets/prompt.yaml');
+    //console.log("System prompt loaded:", this.systemPrompt);
 
     try {
       const response = await fetch(
@@ -80,8 +85,10 @@ export class Assistant {
       const beverageName = parsed.beverage_name || "Unnamed drink";
 
       this._setState(STATE.TALKING);
-      await this._animateOutput(comment);
-      await this._speak(comment);
+      await Promise.all([
+        this._animateOutput(comment),
+        this._speak(comment)
+      ]);
 
       if (recipe) {
         saveRecipe({ beverage_name: beverageName, recipe, comment });
@@ -122,5 +129,54 @@ export class Assistant {
 
   _sleep(ms) {
     return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
+  async _loadPrompt(yamlPath) {
+    try {
+        const response = await fetch(yamlPath);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch ${yamlPath}: ${response.statusText}`);
+        }
+        
+        const yamlText = await response.text();
+        const config = jsYaml.load(yamlText) || {};
+
+        // Model, settings
+        const params = config.model_params || config.model_settings || {};
+        if (params.model) this.groqModel = params.model;
+        if (params.temperature !== undefined) this.aiTemperature = params.temperature;
+        if (params.voice) this.ttsVoice = params.voice;
+
+        // Flavor inventory
+        const baseSolutions = config.inventory?.base_solutions || {};
+        const flavours = config.inventory?.flavours || {};
+        const inventoryItems = { ...baseSolutions, ...flavours };
+
+        const inventoryStr = Object.entries(inventoryItems)
+            .map(([code, name]) => `  ${code}: ${name}`)
+            .join('\n');
+
+        // Sections
+        const role = config.system_prompt || '';
+        const answerFormat = config.answer_format || {};
+        const recipeRules = typeof answerFormat === 'object' && answerFormat !== null
+            ? (answerFormat.recipe_rules || '')
+            : answerFormat;
+        const instructions = config.instructions || '';
+
+        // Assemble prompt
+        const systemInstruction = [
+            role,
+            `- INVENTORY -\n${inventoryStr}`,
+            `- ANSWER FORMAT -\n${recipeRules}`,
+            `- INSTRUCTIONS -\n${instructions}`
+        ].join('\n\n').trim();
+
+        return systemInstruction;
+
+    } catch (e) {
+        console.error(`Error loading prompt YAML:`, e);
+        return '';
+    }
   }
 }

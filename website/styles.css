@@ -50,13 +50,17 @@ html, body {
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
+
+/* ================= HEADER ================= */
 
 .app-header {
     width: 100%;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    z-index: 10;
 }
 
 .datetime-block {
@@ -123,11 +127,15 @@ html, body {
     transform: scale(0.95);
 }
 
+/* ================= CENTER ORB ================= */
+
 .center-zone {
     flex: 1;
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
+    width: 100%;
 }
 
 .orb-button {
@@ -182,6 +190,227 @@ body.is-recording .orb-ring {
     animation-duration: 1.1s;
 }
 
+/* ================= OVERLAYS / MODALS ================= */
+
+.overlay-modal {
+    position: fixed;
+    inset: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(8, 10, 15, 0.75);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.25s ease, visibility 0.25s ease;
+}
+
+.overlay-modal.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.modal-content {
+    width: min(90vw, 460px);
+    max-height: 85vh;
+    background: rgba(16, 20, 29, 0.92);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    overflow-y: auto;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 14px;
+}
+
+.modal-header h2 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--text-main);
+    letter-spacing: 0.3px;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.6rem;
+    cursor: pointer;
+    line-height: 1;
+    padding: 4px;
+    transition: color 0.2s ease;
+}
+
+.close-btn:hover {
+    color: var(--text-main);
+}
+
+.modal-body {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+}
+
+/* Modal Elements & Form Fields */
+
+.recipe-list, .device-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 0;
+}
+
+.recipe-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 12px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius-md);
+    font-weight: 500;
+}
+
+.setting-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 12px;
+}
+
+.setting-row.column {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+}
+
+.setting-header-inline {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.setting-row label, .setting-row span {
+    font-size: 0.9rem;
+    color: var(--text-main);
+    font-weight: 500;
+}
+
+.text-input {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 10px 14px;
+    color: var(--text-main);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+.text-input:focus {
+    border-color: var(--primary-neon);
+    box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+}
+
+.debug-textarea {
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid var(--border-color);
+    border-radius: 10px;
+    padding: 12px;
+    color: #a0aec0;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    resize: vertical;
+    outline: none;
+    min-height: 90px;
+}
+
+.action-btn {
+    background: linear-gradient(135deg, var(--primary-neon), var(--accent-purple));
+    border: none;
+    color: #fff;
+    padding: 8px 16px;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: opacity 0.2s ease, transform 0.1s ease;
+}
+
+.action-btn:hover {
+    opacity: 0.9;
+}
+
+.action-btn:active {
+    transform: scale(0.96);
+}
+
+/* Toggle Switch */
+
+.toggle-switch {
+    position: relative;
+    display: inline-block;
+    width: 46px;
+    height: 26px;
+}
+
+.toggle-switch input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    inset: 0;
+    background-color: rgba(255, 255, 255, 0.1);
+    transition: 0.3s ease;
+    border-radius: 26px;
+    border: 1px solid var(--border-color);
+}
+
+.slider:before {
+    position: absolute;
+    content: "";
+    height: 18px;
+    width: 18px;
+    left: 3px;
+    bottom: 3px;
+    background-color: var(--text-main);
+    transition: 0.3s ease;
+    border-radius: 50%;
+}
+
+input:checked + .slider {
+    background-color: var(--accent-purple);
+    border-color: var(--primary-neon);
+}
+
+input:checked + .slider:before {
+    transform: translateX(20px);
+    background-color: var(--primary-neon);
+}
+
+/* ================= BOTTOM ZONE ================= */
+
 .bottom-zone {
     width: 100%;
     max-width: 900px;
@@ -190,6 +419,7 @@ body.is-recording .orb-ring {
     justify-content: center;
     align-items: center;
     padding-bottom: 12px;
+    z-index: 10;
 }
 
 .ai-text-box {
@@ -207,6 +437,8 @@ body.is-recording .orb-ring {
     opacity: 0;
 }
 
+/* ================= ANIMATIONS ================= */
+
 @keyframes pulse-ring {
     0% {
         transform: scale(0.85);
@@ -221,4 +453,3 @@ body.is-recording .orb-ring {
         opacity: 0.5;
     }
 }
-

@@ -72,6 +72,7 @@ export class SpeechListener {
       this.onTranscription("");
       return;
     }
+    console.log("Audio stopped. Trancribing...")
     const blob = new Blob(this.audioChunks, { type: "audio/webm" });
     await this._transcribe(blob);
   }
@@ -105,6 +106,7 @@ export class SpeechListener {
       }
 
       const data = await response.json();
+      console.log(`Transcribed successfully: ${data.text}`)
       this.onTranscription((data.text || "").trim());
     } catch (e) {
       this.onError(e);
