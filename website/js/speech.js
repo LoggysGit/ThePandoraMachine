@@ -1,4 +1,4 @@
-import { getCookie } from "./js/cookies.js";
+import { getCookie } from "./cookies.js";
 
 export class SpeechListener {
   constructor({ onTranscription, onError } = {}) {

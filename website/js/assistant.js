@@ -1,5 +1,5 @@
-import { getCookie, saveRecipe } from "./js/cookies.js";
-import { SpeechListener } from "./js/speech.js";
+import { getCookie, saveRecipe } from "./cookies.js";
+import { SpeechListener } from "./speech.js";
 
 export const STATE = { IDLE: 0, LISTENING: 1, TALKING: 2 };
 

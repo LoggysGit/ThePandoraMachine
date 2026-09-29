@@ -5,18 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>The Pandora Machine AI</title>
     <link rel="stylesheet" href="styles.css">
-
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <script type="module" src="script.js"></script>
 </head>
 <body>
     <div class="app-viewport">
         <header class="app-header">
             <div class="datetime-block">
                 <span id="clock" class="time-text">00:00</span>
-                <span id="date" class="date-text">Mon, Jan 01</span>
+                <span id="date" class="date-text">Mon, Sep 28</span>
             </div>
 
             <div class="header-right">
@@ -41,6 +40,67 @@
         </header>
 
         <main class="center-zone">
+            <div id="recipes-modal" class="overlay-modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Recipes</h2>
+                        <button id="close-recipes-btn" class="close-btn">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <ul class="recipe-list">
+                            <li class="recipe-item">
+                                <span>Espresso</span>
+                                <button class="action-btn">Dispense</button>
+                            </li>
+                            <li class="recipe-item">
+                                <span>Americano</span>
+                                <button class="action-btn">Dispense</button>
+                            </li>
+                            <li class="recipe-item">
+                                <span>Cappuccino</span>
+                                <button class="action-btn">Dispense</button>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="settings-modal" class="overlay-modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Settings</h2>
+                        <button id="close-settings-btn" class="close-btn">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="setting-row column">
+                            <label for="groq-key-input">Groq API Key</label>
+                            <input type="password" id="groq-key-input" class="text-input" placeholder="gsk_...">
+                        </div>
+
+                        <div class="setting-row column">
+                            <div class="setting-header-inline">
+                                <span>BLE Devices</span>
+                                <button id="scan-btn" class="action-btn">Scan for BLE</button>
+                            </div>
+                            <ul id="ble-devices-list" class="device-list"></ul>
+                        </div>
+
+                        <div class="setting-row">
+                            <span>Voice Output</span>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="voice-output-toggle" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-row column">
+                            <label for="debug-log-output">Debug Log</label>
+                            <textarea id="debug-log-output" class="debug-textarea" readonly rows="5" placeholder="Logs will appear here..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <button id="btn-mic" class="orb-button" aria-label="Hold to Record">
                 <div class="orb-ring ring-1"></div>
                 <div class="orb-ring ring-2"></div>
@@ -52,39 +112,5 @@
             <div id="ai-response-text" class="ai-text-box"></div>
         </footer>
     </div>
-
-    <script>
-        function updateClock() {
-            const now = new Date();
-            const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-            const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
-            
-            document.getElementById('clock').textContent = timeStr;
-            document.getElementById('date').textContent = dateStr;
-        }
-        setInterval(updateClock, 1000);
-        updateClock();
-
-        import { Assistant } from "./js/assistant.js";
-        import { ESPBridge } from "./js/bridge.js";
-
-        const bridge = new ESPBridge({
-          onNotify: (bytes) => console.log("[ESP] notify:", bytes),
-          onError: (e) => console.error("[ESP]", e),
-        });
-
-        const assistant = new Assistant({
-          onStateChange: (s) => { /* update visual */ },
-          onOutputText: (t) => { /* update text */ },
-          onError: (e) => console.error(e),
-          onDispense: (recipe) => bridge.dispenseRecipe(recipe),
-          systemPrompt: "LOAD ./assets/prompt.yaml",
-        });
-
-        document.getElementById("scan-btn").addEventListener("click", async () => {
-          const ok = await bridge.requestAndConnect();
-          console.log("Connected:", ok);
-        });
-        </script>
-    </body>
+</body>
 </html>
