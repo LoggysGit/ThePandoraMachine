@@ -1,3 +1,5 @@
+import jsYaml from 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/+esm';
+
 const SERVICE_UUID = "0000ffe0-0000-1000-8000-00805f9b34fb";
 const CHAR_WRITE_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
 const CHAR_NOTIFY_UUID = "0000ffe1-0000-1000-8000-00805f9b34fb";
@@ -11,14 +13,33 @@ const BYTE_CODES = {
   EOF: 0xef,
 };
 
-export function loadByteCodes(flavourKeys) {
-  let nextCode = 0x10;
-  for (const key of flavourKeys) {
-    if (nextCode >= 0xa0) {
-      throw new Error(`[BLE] Flavour code ${nextCode.toString(16)} is out of range.`);
-    }
-    BYTE_CODES[key] = nextCode;
-    nextCode += 1;
+export async function loadByteCodes(yamlPath) {
+  try {
+      const response = await fetch(yamlPath);
+      if (!response.ok) {
+          throw new Error(`Failed to fetch ${yamlPath}: ${response.statusText}`);
+      }
+
+      const yamlText = await response.text();
+      const config = jsYaml.load(yamlText) || {};
+
+      const flavours = config.inventory?.flavours || {};
+      const flavourKeys = Object.keys(flavours);
+
+      let nextCode = 0x10;
+      for (const key of flavourKeys) {
+          if (nextCode >= 0xa0) {
+              throw new Error(`[BLE] Flavour code ${nextCode.toString(16)} is out of range.`);
+          }
+          BYTE_CODES[key] = nextCode;
+          nextCode += 1;
+      }
+
+      console.log("Bytecodes loaded:", BYTE_CODES);
+      return BYTE_CODES;
+  } catch (e) {
+      console.error(`[BLE] Error loading byte codes from YAML:`, e);
+      return BYTE_CODES;
   }
 }
 
@@ -81,7 +102,7 @@ export function convertRecipe(recipeStr) {
 }
 
 export class ESPBridge {
-  constructor({ onNotify, onError } = {}) {
+  constructor({ onNotify, onError, systemPromptPath } = {}) {
     this.device = null;
     this.server = null;
     this.characteristic = null;
@@ -89,6 +110,8 @@ export class ESPBridge {
 
     this.onNotify = onNotify || (() => {});
     this.onError = onError || ((e) => console.error("[ESPBridge]", e));
+
+    loadByteCodes(systemPromptPath);
   }
 
   isSupported() {
@@ -97,7 +120,7 @@ export class ESPBridge {
 
   async requestAndConnect() {
     if (!this.isSupported()) {
-      this.onError("Web Bluetooth is not supported in this browser (e.g. Safari never supports it).");
+      this.onError("Web Bluetooth is not supported in this browser.");
       return false;
     }
 
@@ -136,7 +159,7 @@ export class ESPBridge {
 
   async send(bytes) {
     if (!this.isConnected || !this.characteristic) {
-      this.onError("Cannot send — not connected");
+      this.onError(`Cannot send "${bytes}" - not connected`);
       return false;
     }
     try {

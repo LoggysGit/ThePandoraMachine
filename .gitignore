@@ -1,2 +1,5 @@
 # Obsolete
 app(obsolete)/
+
+# Unnessesary files
+*.txt

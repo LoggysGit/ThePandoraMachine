@@ -13,6 +13,7 @@ export class Assistant {
     this.onError = onError || ((e) => console.error("[Assistant]", e));
     this.onDispense = onDispense || (() => {});
     this.systemPromptPath = systemPromptPath || "";
+    this.speak = true;
 
     this.speechListener = new SpeechListener({
       onTranscription: (text) => this._handleTranscription(text),
@@ -34,6 +35,10 @@ export class Assistant {
     }
   }
 
+  setSpeakStatus(state){
+    this.speak = state;
+  }
+
   async _handleTranscription(text) {
     if (!text.trim()) {
       this._setState(STATE.IDLE);
@@ -48,7 +53,6 @@ export class Assistant {
     }
 
     this.systemPrompt = await this._loadPrompt('./assets/prompt.yaml');
-    //console.log("System prompt loaded:", this.systemPrompt);
 
     try {
       const response = await fetch(
@@ -87,7 +91,7 @@ export class Assistant {
       this._setState(STATE.TALKING);
       await Promise.all([
         this._animateOutput(comment),
-        this._speak(comment)
+        this.speak ? this._speak(comment) : Promise.resolve()
       ]);
 
       if (recipe) {
