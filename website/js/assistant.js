@@ -40,7 +40,8 @@ export class Assistant {
   }
 
   async _handleTranscription(text) {
-    if (!text.trim()) {
+    const words = text.trim().split(/\s+/).filter(Boolean);
+    if (!text.trim() || words.length < 5) {
       this._setState(STATE.IDLE);
       return;
     }

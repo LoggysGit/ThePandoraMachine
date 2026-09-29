@@ -29,3 +29,7 @@ export function saveRecipe(recipe) {
   recipes.push(recipe);
   setCookie(RECIPES_COOKIE, JSON.stringify(recipes));
 }
+
+export function removeAllRecipes() {
+  deleteCookie(RECIPES_COOKIE);
+}
