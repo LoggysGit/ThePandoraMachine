@@ -53,8 +53,6 @@
         </footer>
     </div>
 
-    <script type="module" src="js/assistant.js"></script>
-    <script type="module" src="js/bridge.js"></script>
     <script>
         function updateClock() {
             const now = new Date();
@@ -66,6 +64,27 @@
         }
         setInterval(updateClock, 1000);
         updateClock();
-    </script>
-</body>
+
+        import { Assistant } from "./js/assistant.js";
+        import { ESPBridge } from "./js/bridge.js";
+
+        const bridge = new ESPBridge({
+          onNotify: (bytes) => console.log("[ESP] notify:", bytes),
+          onError: (e) => console.error("[ESP]", e),
+        });
+
+        const assistant = new Assistant({
+          onStateChange: (s) => { /* update visual */ },
+          onOutputText: (t) => { /* update text */ },
+          onError: (e) => console.error(e),
+          onDispense: (recipe) => bridge.dispenseRecipe(recipe),
+          systemPrompt: "LOAD ./assets/prompt.yaml",
+        });
+
+        document.getElementById("scan-btn").addEventListener("click", async () => {
+          const ok = await bridge.requestAndConnect();
+          console.log("Connected:", ok);
+        });
+        </script>
+    </body>
 </html>
