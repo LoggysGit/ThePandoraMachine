@@ -1,6 +1,6 @@
 // --- IMPORTS --- //
 
-import { setCookie, getCookie, getRecipes } from "./js/cookies.js";
+import { setCookie, getCookie, getRecipes, removeAllRecipes } from "./js/cookies.js";
 import { Assistant } from "./js/assistant.js";
 import { ESPBridge } from "./js/bridge.js";
 
@@ -97,6 +97,11 @@ function toggleRecipes() {
     }
 }
 
+function clearRecipes(){
+    removeAllRecipes();
+    toggleRecipes();
+}
+
 function renderRecipeList() {
     const list = document.querySelector(".recipe-list");
     if (!list) return;
@@ -168,6 +173,11 @@ document.getElementById("btn-settings")?.addEventListener("click", toggleSetting
 document.getElementById("btn-recipes")?.addEventListener("click", toggleRecipes);
 document.getElementById("close-settings-btn")?.addEventListener("click", toggleSettings);
 document.getElementById("close-recipes-btn")?.addEventListener("click", toggleRecipes);
+
+document.getElementById('clear-recipes-btn').addEventListener("click", clearRecipes);
+document.getElementById('voice-output-toggle').addEventListener('change', (event) =>
+    { assistant.setSpeakStatus(event.target.checked) });
+
 
 document.addEventListener("DOMContentLoaded", () => {
     monitorKey();
