@@ -3,7 +3,7 @@ import jsYaml from 'https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/+esm';
 import { getCookie, saveRecipe } from "./cookies.js";
 import { SpeechListener } from "./speech.js";
 
-export const STATE = { IDLE: 0, LISTENING: 1, TALKING: 2 };
+export const STATE = { IDLE: 0, LISTENING: 1, TALKING: 2, PROCESSING: 3 };
 
 export class Assistant {
   constructor({ onStateChange, onOutputText, onError, onDispense, systemPromptPath } = {}) {
@@ -13,6 +13,7 @@ export class Assistant {
     this.onError = onError || ((e) => console.error("[Assistant]", e));
     this.onDispense = onDispense || (() => {});
     this.systemPromptPath = systemPromptPath || "";
+
     this.speak = true;
 
     this.speechListener = new SpeechListener({
@@ -27,10 +28,15 @@ export class Assistant {
   }
 
   async handleAssistantClick() {
-    if (this.state === STATE.IDLE) {
+    if (this.state !== STATE.IDLE && this.state !== STATE.LISTENING) {
+      return;
+    }
+
+    if (this.state === STATE.IDLE && !this.speechListener.isRecording) {
       this._setState(STATE.LISTENING);
       await this.speechListener.toggleListening();
     } else if (this.state === STATE.LISTENING) {
+      this._setState(STATE.PROCESSING);
       await this.speechListener.toggleListening();
     }
   }

@@ -64,7 +64,11 @@ function updateClock() {
     document.getElementById('date').textContent = dateStr;
 }
 
-function updateAssistantVisual(state) {}
+const STATE_NAMES = { 0: "idle", 1: "listening", 2: "talking" };
+function updateAssistantVisual(state) {
+    const name = STATE_NAMES[state] || "idle";
+    document.body.dataset.assistantState = name;
+}
 
 function animateSpeech(text) {
     const el = document.getElementById("ai-response-text");
