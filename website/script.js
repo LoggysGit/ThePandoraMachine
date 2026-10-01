@@ -4,9 +4,9 @@ import { setCookie, getCookie, getRecipes, removeAllRecipes } from "./js/cookies
 import { Assistant } from "./js/assistant.js";
 import { ESPBridge } from "./js/bridge.js";
 
-// --- COMMON FUNCTIONS --- //
+// --- SYSTEM FUNCTIONS --- //
 
-export function monitorKey() {
+function monitorKey() {
     const keyCookie = getCookie("groq_api_key") || "";
     const micBtn = document.getElementById("btn-mic");
     const keyInput = document.getElementById("groq-key-input");
@@ -64,6 +64,15 @@ function updateClock() {
     document.getElementById('date').textContent = dateStr;
 }
 
+function requestFullscreen() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch((e) => console.warn("Fullscreen denied:", e));
+    } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+    }
+}
+
 const STATE_NAMES = { 0: "idle", 1: "listening", 2: "talking" };
 function updateAssistantVisual(state) {
     const name = STATE_NAMES[state] || "idle";
@@ -75,17 +84,9 @@ function animateSpeech(text) {
     if (el) el.textContent = text;
 }
 
-function toggleSettings() {
-    const settings = document.getElementById("settings-modal");
-    const recipes = document.getElementById("recipes-modal");
+// --- MENU FUNCTIONS --- //
 
-    if (recipes && !recipes.classList.contains("hidden")) {
-        recipes.classList.add("hidden");
-    }
-    if (settings) {
-        settings.classList.toggle("hidden");
-    }
-}
+function togglePumpTestMenu(){ }
 function toggleRecipes() {
     const settings = document.getElementById("settings-modal");
     const recipes = document.getElementById("recipes-modal");
@@ -100,6 +101,19 @@ function toggleRecipes() {
         }
     }
 }
+function toggleSettings() {
+    const settings = document.getElementById("settings-modal");
+    const recipes = document.getElementById("recipes-modal");
+
+    if (recipes && !recipes.classList.contains("hidden")) {
+        recipes.classList.add("hidden");
+    }
+    if (settings) {
+        settings.classList.toggle("hidden");
+    }
+}
+
+// --- RECIPE FUNCTIONS --- //
 
 function clearRecipes(){
     removeAllRecipes();
@@ -139,15 +153,6 @@ function renderRecipeList() {
     });
 }
 
-function requestFullscreen() {
-    const el = document.documentElement;
-    if (el.requestFullscreen) {
-        el.requestFullscreen().catch((e) => console.warn("Fullscreen denied:", e));
-    } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen();
-    }
-}
-
 // --- MAIN CODE SECTION --- //
 
 const PROMPT_FILE = "./assets/prompt.yaml"
@@ -174,26 +179,35 @@ if (keyInput) {
     });
 }
 
+// Main event listeners
 document.getElementById("btn-mic")?.addEventListener("click", async () => {
-    assistant.handleAssistantClick();
-});
+    assistant.handleAssistantClick(); });
 
 document.getElementById("scan-btn")?.addEventListener("click", async () => {
-    bridge.requestAndConnect();
-});
+    bridge.requestAndConnect(); });
 
+// Fullscreen button
 document.getElementById("fullscreen-btn").addEventListener("click", requestFullscreen)
 
-document.getElementById("btn-settings")?.addEventListener("click", toggleSettings);
+// Recipes button
 document.getElementById("btn-recipes")?.addEventListener("click", toggleRecipes);
-document.getElementById("close-settings-btn")?.addEventListener("click", toggleSettings);
 document.getElementById("close-recipes-btn")?.addEventListener("click", toggleRecipes);
 
+// Punp test menu button
+document.getElementById("btn-pumps")?.addEventListener("click", togglePumpTestMenu);
+document.getElementById("close-pumps-btn")?.addEventListener("click", togglePumpTestMenu);
+
+// Settings button
+document.getElementById("btn-settings")?.addEventListener("click", toggleSettings);
+document.getElementById("close-settings-btn")?.addEventListener("click", toggleSettings);
+
+// Other buttons
 document.getElementById('clear-recipes-btn').addEventListener("click", clearRecipes);
+
 document.getElementById('voice-output-toggle').addEventListener('change', (event) =>
     { assistant.setSpeakStatus(event.target.checked) });
 
-
+// DOM Content function
 document.addEventListener("DOMContentLoaded", () => {
     monitorKey();
 
@@ -206,5 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 });
 
+// Enable clock
 setInterval(updateClock, 1000);
 updateClock();

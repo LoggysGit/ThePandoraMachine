@@ -32,3 +32,8 @@ Sweet solution 1:1
 
 Sour solution 1:10
     1 liter of solution is nearly 100 g of citric acid powder and 1 liter of tap water
+
+Flavor solution
+    PG solution + flavor
+    a. PG solution 1:1 - 100 ml = PG 99.9 50ml + Water (t=40-50) 50ml
+    b. flavor - PG flavor essence. ~1ml on 10ml PG solution 
