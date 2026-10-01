@@ -139,6 +139,15 @@ function renderRecipeList() {
     });
 }
 
+function requestFullscreen() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch((e) => console.warn("Fullscreen denied:", e));
+    } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+    }
+}
+
 // --- MAIN CODE SECTION --- //
 
 const PROMPT_FILE = "./assets/prompt.yaml"
@@ -172,6 +181,8 @@ document.getElementById("btn-mic")?.addEventListener("click", async () => {
 document.getElementById("scan-btn")?.addEventListener("click", async () => {
     bridge.requestAndConnect();
 });
+
+document.getElementById("fullscreen-btn").addEventListener("click", requestFullscreen)
 
 document.getElementById("btn-settings")?.addEventListener("click", toggleSettings);
 document.getElementById("btn-recipes")?.addEventListener("click", toggleRecipes);
