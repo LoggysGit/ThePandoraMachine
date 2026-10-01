@@ -33,6 +33,7 @@
 html, body {
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     overflow: hidden;
     background-color: var(--bg-color);
     background-image: 
@@ -45,6 +46,7 @@ html, body {
 .app-viewport {
     width: 100vw;
     height: 100vh;
+    height: 100dvh;
     padding: 24px 36px;
     display: flex;
     flex-direction: column;
