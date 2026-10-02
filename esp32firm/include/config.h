@@ -19,6 +19,9 @@
 
 // === CONFIG === //
 
+#define EOF_BYTE 0xEF
+#define SEPARATOR_BYTE 0x0A
+
 #define STRIP_SEGMENT_LENGTH 10 // Strip length (in LEDs)
 #define STRIP_SEGMENT_NUMBER 2  // How many strips
 

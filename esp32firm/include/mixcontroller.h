@@ -29,15 +29,19 @@ private:
 
     uint32_t registerState = 0;
 
-    bool dispenseByCode(uint8_t code, uint16_t amountMl);
+    bool checkCommand();
 
     bool processRecipe();
 
-    uint32_t millilitersToMillis(uint8_t code, uint16_t amountMl);
+    bool dispenseByCode(uint8_t code, float amountMl);
 
     bool triggerPump(uint8_t address, uint32_t durationMs);
 
     void writeShiftRegisters(uint32_t bitmask);
+
+    uint32_t millilitersToMillis(uint8_t code, uint16_t amountMl);
+
+    uint16_t calculateCRC16(const uint8_t* data, size_t length);
 
     struct ActivePump {
         uint8_t address;
