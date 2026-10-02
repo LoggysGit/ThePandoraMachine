@@ -1,12 +1,11 @@
 #pragma once
 
 #include <Arduino.h>
-//#include <microLED.h>
 
 class EffectsManager{
 public:
-    EffectsManager();
+    EffectsManager(uint8_t &effectStateBuff);
 
 private:
-    int i = 0;
+    uint8_t& effectStateBuffer;
 };

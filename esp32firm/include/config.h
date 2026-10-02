@@ -4,7 +4,7 @@
 
 #define SHIFT_DATA_PIN      23  // DS (Data)
 #define SHIFT_CLOCK_PIN     14  // SH_CP (Clock)
-#define SHIFT_LATCH_PIN     12  // ST_CP (Latch / RCK)
+#define SHIFT_LATCH_PIN     17  // ST_CP (Latch / RCK)
 
 #define PUMP_CLUSTER_1_PIN  25  // 4 Main pumps + first 4 flavors
 #define PUMP_CLUSTER_2_PIN  26  // 5-12 flavors

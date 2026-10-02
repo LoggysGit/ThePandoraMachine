@@ -5,19 +5,15 @@
 #include <cstdint>
 #include <functional>
 
-#include <GyverHC595.h>
+#include <GyverShift.h>
 
 #include "config.h"
 
 class MixController {
 public:
-    explicit MixController(const std::vector<uint8_t>& messageBuff);
+    MixController(std::vector<uint8_t>& messageBuff, uint8_t& effectStateBuff);
 
-    void begin();
-
-    bool dispenseByCode(uint8_t code, uint16_t amountMl);
-
-    bool processRecipe();
+    bool begin();
 
     void update();
 
@@ -26,11 +22,16 @@ public:
     bool isDispensing() const { return !activePumps.empty(); }
 
 private:
-    GyverHC595<4> reg(SHIFT_DATA_PIN, SHIFT_CLOCK_PIN, SHIFT_LATCH_PIN);
+    GyverShift<OUTPUT, 4> reg{SHIFT_LATCH_PIN, SHIFT_DATA_PIN, SHIFT_CLOCK_PIN};
 
-    const std::vector<uint8_t>& messageBuffer;
+    std::vector<uint8_t>& messageBuffer;
+    uint8_t& effectStateBuffer;
 
     uint32_t registerState = 0;
+
+    bool dispenseByCode(uint8_t code, uint16_t amountMl);
+
+    bool processRecipe();
 
     uint32_t millilitersToMillis(uint8_t code, uint16_t amountMl);
 

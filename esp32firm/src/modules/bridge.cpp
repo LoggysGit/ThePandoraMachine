@@ -1,11 +1,11 @@
 // = THIS MODULE CONNECTS WITH BLE = //
 #include "bridge.h"
 
-BLEBridge::BLEBridge(std::vector<uint8_t>& recievedBuff) {
-    recievedBuffer = recievedBuff;
-}
+BLEBridge::BLEBridge(std::vector<uint8_t>& recievedBuff)
+    : recievedBuffer(recievedBuff)
+{ }
 
-void BLEBridge::begin(const char* deviceName) {
+bool BLEBridge::begin(const char* deviceName) {
     BLEDevice::init(deviceName);
 
     pServer = BLEDevice::createServer();
@@ -34,6 +34,7 @@ void BLEBridge::begin(const char* deviceName) {
     
     BLEDevice::startAdvertising();
     Serial.println("[BLE] Advertising started. Ready for Web Bluetooth connections.");
+    return true;
 }
 
 void BLEBridge::setOnDataReceived(DataCallback callback) {

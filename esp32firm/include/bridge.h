@@ -14,7 +14,7 @@ public:
 
     BLEBridge(std::vector<uint8_t>& recievedBuff);
     
-    void begin(const char* deviceName = "Pandora Machine");
+    bool begin(const char* deviceName = "The Pandora Machine");
     
     void setOnDataReceived(DataCallback callback);
     
