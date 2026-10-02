@@ -102,14 +102,15 @@ export function convertRecipe(recipeStr) {
 }
 
 export class ESPBridge {
-  constructor({ onNotify, onError, systemPromptPath } = {}) {
+  constructor({ onNotify, onChangeConnection, onError, systemPromptPath } = {}) {
     this.device = null;
     this.server = null;
     this.characteristic = null;
     this.isConnected = false;
 
     this.onNotify = onNotify || (() => {});
-    this.onError = onError || ((e) => console.error("[ESPBridge]", e));
+    this.onChangeConnection = onChangeConnection || (() => {});
+    this.onError = onError || ((e) => console.error("[Bridge]", e));
 
     loadByteCodes(systemPromptPath);
   }
@@ -149,10 +150,13 @@ export class ESPBridge {
       });
 
       this.isConnected = true;
+      this.onChangeConnection(this.isConnected);
       return true;
-    } catch (e) {
+    }
+    catch (e) {
       this.onError(e);
       this.isConnected = false;
+      this.onChangeConnection(this.isConnected);
       return false;
     }
   }
@@ -181,5 +185,6 @@ export class ESPBridge {
       this.device.gatt.disconnect();
     }
     this.isConnected = false;
+    this.onChangeConnection(this.isConnected);
   }
 }

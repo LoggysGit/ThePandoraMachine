@@ -113,6 +113,26 @@ function toggleSettings() {
     }
 }
 
+function updateConnectionStatus(isConnected) {
+    const bleDot = document.getElementById("ble-dot");
+    const disconnectBtn = document.getElementById("disconnect-btn");
+  
+    // BLE dot
+    if (bleDot) {
+      bleDot.classList.toggle("connected", isConnected);
+      bleDot.classList.toggle("disconnected", !isConnected);
+      bleDot.title = isConnected ? "BLE: On" : "BLE: Off";
+    }
+  
+    // Disconnection Button
+    if (disconnectBtn) {
+      disconnectBtn.disabled = !isConnected;
+    }
+    
+    console.log(document.getElementById("disconnect-btn").disabled);
+    console.log(`updated ${isConnected}.`);
+}
+
 // --- RECIPE FUNCTIONS --- //
 
 function clearRecipes(){
@@ -167,6 +187,7 @@ const assistant = new Assistant({
 
 const bridge = new ESPBridge({
     onNotify: (bytes) => console.log("[ESP] notify:", bytes),
+    onChangeConnection: (conn) => { updateConnectionStatus (conn) },
     onError: (e) => console.error("[ESP]", e),
     systemPromptPath: PROMPT_FILE,
 });
@@ -185,6 +206,9 @@ document.getElementById("btn-mic")?.addEventListener("click", async () => {
 
 document.getElementById("scan-btn")?.addEventListener("click", async () => {
     bridge.requestAndConnect(); });
+
+document.getElementById("disconnect-btn")?.addEventListener("click", async () => {
+    bridge.disconnect(); });
 
 // Fullscreen button
 document.getElementById("fullscreen-btn").addEventListener("click", requestFullscreen)
@@ -223,3 +247,6 @@ document.addEventListener("DOMContentLoaded", () => {
 // Enable clock
 setInterval(updateClock, 1000);
 updateClock();
+
+// Update status
+updateConnectionStatus(false);
