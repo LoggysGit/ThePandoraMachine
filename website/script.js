@@ -6,6 +6,24 @@ import { ESPBridge } from "./js/bridge.js";
 
 // --- SYSTEM FUNCTIONS --- //
 
+function updateClock() {
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
+    const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+    document.getElementById('clock').textContent = timeStr;
+    document.getElementById('date').textContent = dateStr;
+}
+
+function requestFullscreen() {
+    const el = document.documentElement;
+    if (el.requestFullscreen) {
+        el.requestFullscreen().catch((e) => console.warn("Fullscreen denied:", e));
+    } else if (el.webkitRequestFullscreen) {
+        el.webkitRequestFullscreen();
+    }
+}
+
 function monitorKey() {
     const keyCookie = getCookie("groq_api_key") || "";
     const micBtn = document.getElementById("btn-mic");
@@ -22,7 +40,7 @@ function monitorKey() {
         keyInput.parentNode.appendChild(warningLabel);
     }
 
-    // Validate  key format (gsk_{30})
+    // Validate key format (gsk_{30})
     const isValidKey = /^gsk_[a-zA-Z0-9_-]{30,}$/.test(keyCookie.trim());
 
     if (!isValidKey) {
@@ -55,23 +73,66 @@ function monitorKey() {
     return isValidKey;
 }
 
-function updateClock() {
-    const now = new Date();
-    const timeStr = now.toLocaleTimeString('en-US', { hour12: false, hour: '2-digit', minute: '2-digit' });
-    const dateStr = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+function setupConsoleCapture() {
+    const logOutput = document.getElementById("debug-log-output");
+    if (!logOutput) return;
 
-    document.getElementById('clock').textContent = timeStr;
-    document.getElementById('date').textContent = dateStr;
-}
+    const original = {
+        log: console.log.bind(console),
+        warn: console.warn.bind(console),
+        error: console.error.bind(console),
+    };
 
-function requestFullscreen() {
-    const el = document.documentElement;
-    if (el.requestFullscreen) {
-        el.requestFullscreen().catch((e) => console.warn("Fullscreen denied:", e));
-    } else if (el.webkitRequestFullscreen) {
-        el.webkitRequestFullscreen();
+    function formatArgs(args) {
+        return args
+            .map((arg) => {
+                if (arg instanceof Error) return arg.stack || arg.message;
+                if (typeof arg === "object" && arg !== null) {
+                    try {
+                        return JSON.stringify(arg);
+                    } catch {
+                        return String(arg);
+                    }
+                }
+                return String(arg);
+            })
+            .join(" ");
     }
+
+    function appendLine(level, args) {
+        const time = new Date().toLocaleTimeString();
+        const prefix = level === "error" ? "ERR" : level === "warn" ? "WARN" : "LOG";
+        const line = `[${time}] [${prefix}] ${formatArgs(args)}\n`;
+
+        logOutput.value += line;
+        logOutput.scrollTop = logOutput.scrollHeight;
+    }
+
+    console.log = (...args) => {
+        original.log(...args);
+        appendLine("log", args);
+    };
+
+    console.warn = (...args) => {
+        original.warn(...args);
+        appendLine("warn", args);
+    };
+
+    console.error = (...args) => {
+        original.error(...args);
+        appendLine("error", args);
+    };
+
+    window.addEventListener("error", (e) => {
+        appendLine("error", [`Uncaught: ${e.message}`, `at ${e.filename}:${e.lineno}`]);
+    });
+
+    window.addEventListener("unhandledrejection", (e) => {
+        appendLine("error", [`Unhandled rejection: ${e.reason}`]);
+    });
 }
+
+// Assistant
 
 const STATE_NAMES = { 0: "idle", 1: "listening", 2: "talking" };
 function updateAssistantVisual(state) {
@@ -112,7 +173,6 @@ function buildMainPumpRow(bridge) {
         grid.appendChild(btn);
     });
 }
-
 function buildMiniPumpGrid(bridge) {
     const grid = document.getElementById("mini-pump-grid");
     if (!grid || grid.children.length > 0) return;
@@ -262,9 +322,9 @@ const assistant = new Assistant({
 });
 
 const bridge = new ESPBridge({
-    onNotify: (bytes) => console.log("[ESP] notify:", bytes),
+    onNotify: (bytes) => console.log("Notify:", bytes),
     onChangeConnection: (conn) => { updateConnectionStatus (conn) },
-    onError: (e) => console.error("[ESP]", e),
+    onError: (e) => console.error("Error:", e),
     systemPromptPath: PROMPT_FILE,
 });
 
@@ -326,3 +386,6 @@ updateClock();
 
 // Load test menu
 buildPumpTestGrids(bridge);
+
+// Set up logs
+setupConsoleCapture();

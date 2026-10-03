@@ -2,7 +2,7 @@
 info about project
 
 **Stack**:
-    - App: python flet
+    - App: Webpage (HTML/CSS/JS)
     - Firmware: PlatformIO
     - ESP32 and 3D-printing
 
@@ -26,7 +26,7 @@ Flasks
 Gates
 Pin extenders
 
-## Things you must prepare yourself
+## Things you must prepare by yourself
 Sweet solution 1:1
     1 liter of solution is nearly 620 g of white sugar and 620 ml of tap water
 
@@ -36,4 +36,7 @@ Sour solution 1:10
 Flavor solution
     PG solution + flavor
     a. PG solution 1:1 - 100 ml = PG 99.9 50ml + Water (t=40-50) 50ml
-    b. flavor - PG flavor essence. ~1ml on 10ml PG solution 
+    b. flavor - PG flavor essence. ~1ml on 10ml PG solution
+
+Still water
+    Warm still water
