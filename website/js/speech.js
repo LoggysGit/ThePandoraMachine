@@ -28,7 +28,7 @@ export class SpeechListener {
     try {
       this.stream = await navigator.mediaDevices.getUserMedia({ audio: true });
     } catch (e) {
-      this.onError(`Microphone permission denied: ${e}`);
+      this.onError(`[SpeechListener] Microphone permission denied: ${e}`);
       return;
     }
 
@@ -68,11 +68,11 @@ export class SpeechListener {
 
   async _handleStopped() {
     if (this.audioChunks.length === 0) {
-      this.onError("No audio captured");
+      this.onError("[SpeechListener] No audio captured");
       this.onTranscription("");
       return;
     }
-    console.log("Audio stopped. Trancribing...")
+    console.log("[SpeechListener] Audio stopped. Trancribing...")
     const blob = new Blob(this.audioChunks, { type: "audio/webm" });
     await this._transcribe(blob);
   }
@@ -80,7 +80,7 @@ export class SpeechListener {
   async _transcribe(blob) {
     const apiKey = getCookie("groq_api_key");
     if (!apiKey) {
-      this.onError("No Groq API key set");
+      this.onError("[SpeechListener] No Groq API key set. SET IT NOW!");
       this.onTranscription("");
       return;
     }
@@ -102,11 +102,11 @@ export class SpeechListener {
 
       if (!response.ok) {
         const errText = await response.text();
-        throw new Error(`Transcription failed (${response.status}): ${errText}`);
+        throw new Error(`[SpeechListener] Transcription failed (${response.status}): ${errText}`);
       }
 
       const data = await response.json();
-      console.log(`Transcribed successfully: ${data.text}`)
+      console.log(`[SpeechListener] Transcribed successfully: ${data.text}`)
       this.onTranscription((data.text || "").trim());
     } catch (e) {
       this.onError(e);

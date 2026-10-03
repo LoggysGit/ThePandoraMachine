@@ -84,7 +84,7 @@ export class Assistant {
 
       if (!response.ok) {
         const errText = await response.text();
-        throw new Error(`Groq chat request failed (${response.status}): ${errText}`);
+        throw new Error(`[Assistant] Groq chat request failed (${response.status}): ${errText}`);
       }
 
       const data = await response.json();
@@ -146,7 +146,7 @@ export class Assistant {
     try {
         const response = await fetch(yamlPath);
         if (!response.ok) {
-            throw new Error(`Failed to fetch ${yamlPath}: ${response.statusText}`);
+            throw new Error(`[Assistant] Failed to fetch ${yamlPath}: ${response.statusText}`);
         }
         
         const yamlText = await response.text();
@@ -186,7 +186,7 @@ export class Assistant {
         return systemInstruction;
 
     } catch (e) {
-        console.error(`Error loading prompt YAML:`, e);
+        console.error(`[Assistant] Error loading prompt YAML:`, e);
         return '';
     }
   }

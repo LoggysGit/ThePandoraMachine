@@ -18,7 +18,7 @@ export async function loadByteCodes(yamlPath) {
   try {
       const response = await fetch(yamlPath);
       if (!response.ok) {
-          throw new Error(`Failed to fetch ${yamlPath}: ${response.statusText}`);
+          throw new Error(`[BLE] Failed to fetch ${yamlPath}: ${response.statusText}`);
       }
 
       const yamlText = await response.text();
@@ -36,7 +36,7 @@ export async function loadByteCodes(yamlPath) {
           nextCode += 1;
       }
 
-      console.log("[BLE] Bytecodes loaded:", BYTE_CODES);
+      console.log("[BLE] Bytecodes loaded.");
       return BYTE_CODES;
   } catch (e) {
       console.error(`[BLE] Error loading byte codes from YAML:`, e);
@@ -111,7 +111,7 @@ export class ESPBridge {
 
     this.onNotify = onNotify || (() => {});
     this.onChangeConnection = onChangeConnection || (() => {});
-    this.onError = onError || ((e) => console.error("[Bridge]", e));
+    this.onError = onError || ((e) => console.error("[BLE]", e));
 
     loadByteCodes(systemPromptPath);
     this.onChangeConnection(this.isConnected);
@@ -123,7 +123,7 @@ export class ESPBridge {
 
   async requestAndConnect() {
     if (!this.isSupported()) {
-      this.onError("Web Bluetooth is not supported in this browser.");
+      this.onError("[BLE] Web Bluetooth is not supported in this browser.");
       return false;
     }
 

@@ -101,8 +101,8 @@ function setupConsoleCapture() {
 
     function appendLine(level, args) {
         const time = new Date().toLocaleTimeString();
-        const prefix = level === "error" ? "ERR" : level === "warn" ? "WARN" : "LOG";
-        const line = `[${time}] [${prefix}] ${formatArgs(args)}\n`;
+        const prefix = level === "error" ? "err" : level === "warn" ? "warn" : "log";
+        const line = `[${time}] (${prefix}) : ${formatArgs(args)}\n`;
 
         logOutput.value += line;
         logOutput.scrollTop = logOutput.scrollHeight;
