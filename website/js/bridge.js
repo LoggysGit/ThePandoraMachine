@@ -134,6 +134,7 @@ export class ESPBridge {
 
       this.device.addEventListener("gattserverdisconnected", () => {
         this.isConnected = false;
+        this.onChangeConnection(this.isConnected);
       });
 
       this.server = await this.device.gatt.connect();

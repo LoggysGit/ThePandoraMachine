@@ -44,7 +44,8 @@ void MixController::update() {
         }
 
         // Perform
-        if (!isDispensing()) processRecipe();
+        if (!isDispensing()) { processRecipe(); }
+        else { Serial.println("[MixController] New command will be ignored due to unfinished processes."); }
 
         // Clear buffer
         messageBuffer.clear();
