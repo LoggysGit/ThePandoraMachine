@@ -17,8 +17,11 @@
 #define EOF_BYTE            0xEF
 #define SEPARATOR_BYTE      0x0A
 
-#define STRIP_SEGMENT_LENGTH 10 // Strip length (in LEDs)
+#define STRIP_SEGMENT_LENGTH 4 // Strip length (in LEDs)
 #define STRIP_SEGMENT_NUMBER 2  // How many strips
+
+#define LED_TYPE    WS2812B
+#define COLOR_ORDER GRB
 
 #define MINI_PUMP_SPEED_MLS 0.0167 // Main pump speed (ml/s) [SET YOUR OWN!]
 #define MAIN_PUMP_SPEED_MLS 0.5    // Mini pump speed (ml/s) [SET YOUR OWN!]

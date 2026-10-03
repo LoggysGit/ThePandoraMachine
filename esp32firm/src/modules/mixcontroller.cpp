@@ -15,12 +15,11 @@ bool MixController::begin(){
 void MixController::update() {
     // Update pumps
     uint32_t now = millis();
-    bool stateChanged = false;
     for (auto it = activePumps.begin(); it != activePumps.end(); ) {
         if (now >= it->stopTime) {
             writeShiftRegisters(it->address, LOW);;
             it = activePumps.erase(it);
-            stateChanged = true;
+            if (!isDispensing()) effectStateBuffer = 0;
         } 
         else
             { ++it; }
@@ -83,6 +82,8 @@ bool MixController::processRecipe() {
     size_t payloadLength = this->messageBuffer.size() - 3;
     size_t index = 0;
 
+    effectStateBuffer = 1;
+
     while (index < payloadLength) {
         if (this->messageBuffer[index] == SEPARATOR_BYTE) {
             index++;
@@ -112,6 +113,7 @@ bool MixController::processRecipe() {
     return true;
 }
 
+
 bool MixController::dispenseByCode(uint8_t code, float amountMl) {
     if (amountMl <= 0.0f) {
         return false;
@@ -123,6 +125,7 @@ bool MixController::dispenseByCode(uint8_t code, float amountMl) {
 
     if (pumpSpeedMlS <= 0.0f) {
         Serial.printf("[MixCore] ERROR: Invalid pump speed for code 0x%02X\n", code);
+        effectStateBuffer = 5;
         return false;
     }
 
@@ -182,6 +185,7 @@ void MixController::writeShiftRegisters(uint32_t address, uint8_t state) {
     pin = static_cast<uint8_t>(address);
     if (pin >= 32) {
         Serial.printf("[MixCore] Pin index %u out of range (0-31)!\n", pin);
+        effectStateBuffer = 4;
         return;
     }
 
