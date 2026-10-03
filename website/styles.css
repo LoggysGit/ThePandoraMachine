@@ -427,6 +427,12 @@ body[data-assistant-state="talking"] .orb-ring {
     transform: scale(0.96);
 }
 
+.action-btn:disabled {
+    opacity: 0.5;
+    cursor: default;
+    pointer-events: none;
+}
+
 /* Toggle Switch */
 
 .toggle-switch {

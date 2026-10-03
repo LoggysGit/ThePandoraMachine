@@ -127,6 +127,7 @@ function updateConnectionStatus(isConnected) {
     // Disconnection Button
     if (disconnectBtn) {
       disconnectBtn.disabled = !isConnected;
+      bleDot.classList.toggle("disconnected", !isConnected);
     }
     
     console.log(document.getElementById("disconnect-btn").disabled);
