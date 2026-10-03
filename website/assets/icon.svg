@@ -1,13 +1,30 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
- <defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#65F6F2"/><stop offset=".52" stop-color="#53A9FF"/><stop offset="1" stop-color="#A773FF"/></linearGradient></defs>
- <g fill="url(#a)">
-  <rect x="0" y="69" width="22" height="118" rx="11"/>
-  <rect x="33" y="39" width="22" height="178" rx="11"/>
-  <rect x="66" y="14" width="22" height="228" rx="11"/>
-  <rect x="99" y="0" width="22" height="256" rx="11"/>
-  <rect x="132" y="0" width="22" height="256" rx="11"/>
-  <rect x="165" y="14" width="22" height="228" rx="11"/>
-  <rect x="198" y="39" width="22" height="178" rx="11"/>
-  <rect x="231" y="69" width="25" height="118" rx="11"/>
- </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <rect width="512" height="512" rx="112" fill="#FFFFFF"/>
+  <rect width="500" height="500" x="6" y="6" rx="106" fill="none" stroke="#F1F5F9" stroke-width="4"/>
+
+  <g transform="translate(0, 10)">
+    <circle cx="176" cy="110" r="12" fill="#00E5FF"/>
+    <circle cx="228" cy="92" r="12" fill="#7000FF"/>
+    <circle cx="284" cy="92" r="12" fill="#FF007A"/>
+    <circle cx="336" cy="110" r="12" fill="#00F0FF"/>
+
+    <path d="M176 122 C 176 165, 236 175, 242 195" stroke="#00E5FF" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.4"/>
+    <path d="M228 104 C 228 155, 250 165, 252 195" stroke="#7000FF" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.4"/>
+    <path d="M284 104 C 284 155, 262 165, 260 195" stroke="#FF007A" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.4"/>
+    <path d="M336 122 C 336 165, 276 175, 270 195" stroke="#00F0FF" stroke-width="4" stroke-linecap="round" fill="none" opacity="0.4"/>
+
+    <circle cx="256" cy="275" r="78" stroke="#0F172A" stroke-width="3" stroke-dasharray="3 13" fill="none" opacity="0.25"/>
+
+    <path d="M256 190 C256 190, 212 248, 212 280 C212 304.3 231.7 324 256 324 C280.3 324 300 304.3 300 280 C300 248, 256 190, 256 190 Z" fill="url(#pandoraGradient)"/>
+
+    <path d="M140 180 L372 180 L256 305 L256 395 M200 395 L312 395" stroke="#0F172A" stroke-width="14" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+  </g>
+
+  <defs>
+    <linearGradient id="pandoraGradient" x1="212" y1="190" x2="300" y2="324" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#00F0FF"/>
+      <stop offset="50%" stop-color="#7000FF"/>
+      <stop offset="100%" stop-color="#FF007A"/>
+    </linearGradient>
+  </defs>
 </svg>

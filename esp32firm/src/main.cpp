@@ -13,14 +13,14 @@ EffectsManager effectsManager(effectStateBuffer);
 
 void setup() {
     Serial.begin(115200);
-    Serial.println("\nThe Pandora Machine enabled. Initializing...");
+    Serial.println("\n> The Pandora Machine enabled. Initializing...");
 
     // Init BLE bridge (Set your own name!)
-    if (!bleBridge.begin("The Pandora Machine #1")) Serial.println("BLE init failed.");
+    if (!bleBridge.begin("The Pandora Machine #1")) Serial.println("> BLE init failed.");
     // Init mix controller
-    if (!mixController.begin()) Serial.println("Mix controller init failed.");
+    if (!mixController.begin()) Serial.println("> Mix controller init failed.");
   
-    Serial.println("\nThe Pandora Machine started.");
+    Serial.println("> The Pandora Machine started.");
 }
 
 void loop() {

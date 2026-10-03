@@ -5,6 +5,7 @@
 #include <cstdint>
 #include <functional>
 
+#define GSHIFT_DELAY 5
 #include <GyverShift.h>
 
 #include "config.h"
@@ -37,7 +38,9 @@ private:
 
     bool triggerPump(uint8_t address, uint32_t durationMs);
 
-    void writeShiftRegisters(uint32_t bitmask);
+    void writeShiftRegisters(uint32_t address, uint8_t state);
+
+    uint8_t codeToAddress(uint8_t code);
 
     uint32_t millilitersToMillis(uint8_t code, uint16_t amountMl);
 
@@ -47,6 +50,5 @@ private:
         uint8_t address;
         uint32_t stopTime;
     };
-
     std::vector<ActivePump> activePumps;
 };

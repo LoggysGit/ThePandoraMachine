@@ -6,20 +6,33 @@ MixController::MixController(std::vector<uint8_t> &messageBuff, uint8_t &effectS
 {}
 
 bool MixController::begin(){
+    reg.clearAll();
+    reg.update();
+
     return true;
 }
 
 void MixController::update() {
-    // ?
+    // Update pumps
+    uint32_t now = millis();
+    bool stateChanged = false;
+    for (auto it = activePumps.begin(); it != activePumps.end(); ) {
+        if (now >= it->stopTime) {
+            writeShiftRegisters(it->address, LOW);;
+            it = activePumps.erase(it);
+            stateChanged = true;
+        } 
+        else
+            { ++it; }
+    }
+
+    // Check for buffer update
     if (!messageBuffer.empty()){
 
         // DEBUG
-            Serial.print("[MixController] Command received (bytes: ");
-            Serial.print(messageBuffer.size());
-            Serial.print("): ");
-            for (uint8_t b : messageBuffer) {
-                Serial.printf("0x%02X ", b);
-            }
+            Serial.print("[MixController] Command received: ");
+            for (uint8_t b : messageBuffer)
+                { Serial.printf("0x%02X ", b); }
             Serial.println();
         // DEBUG
 
@@ -31,7 +44,7 @@ void MixController::update() {
         }
 
         // Perform
-        processRecipe();
+        if (!isDispensing()) processRecipe();
 
         // Clear buffer
         messageBuffer.clear();
@@ -89,8 +102,6 @@ bool MixController::processRecipe() {
             actualAmount *= 0.001f;
         }
 
-        Serial.printf("[MixParser] Code: 0x%02X | Raw Val: %u | Calculated: %.3f\n", code, value, actualAmount);
-
         // Dispense
         dispenseByCode(code, actualAmount);
 
@@ -116,11 +127,67 @@ bool MixController::dispenseByCode(uint8_t code, float amountMl) {
 
     uint32_t pumpMillis = static_cast<uint32_t>((amountMl / pumpSpeedMlS) * 1000.0f);
 
+    // Convert code into adress
+    uint8_t address = codeToAddress(code);
+
     // Trigger pump
     Serial.printf("[MixCore] Pump 0x%02X (%u): %0.3f ml -> set up for %u ms\n", 
-                  code, code, amountMl, pumpMillis);
+                  code, address, amountMl, pumpMillis);
+    triggerPump(address, pumpMillis);
 
     return true;
+}
+
+uint8_t MixController::codeToAddress(uint8_t code) {
+    // 0xAF - address 0 (Base water)
+    if (code == 0xAF) {
+        return 0;
+    }
+    // 0xA0-0xAE - addresses 1-3 (Additional bases)
+    if (code >= 0xA0 && code <= 0xA2) {
+        return code - 0xA0 + 1;
+    }
+    // 0x10-0x99 - addresses 4+ (Flavors)
+    if (code >= 0x10 && code <= 0x99) {
+        return code - 0x10 + 4;
+    }
+    return 0xFF;
+}
+
+bool MixController::triggerPump(uint8_t address, uint32_t durationMs) {
+    uint32_t now = millis();
+
+    // Update pump (if in list)
+    for (auto &pump : activePumps) {
+        if (pump.address == address) {
+            pump.stopTime = now + durationMs;
+            return true;
+        }
+    }
+
+    // Add new pump
+    activePumps.push_back({address, now + durationMs});
+
+    // Enable shift
+    writeShiftRegisters(address, HIGH);
+
+    return true;
+}
+
+void MixController::writeShiftRegisters(uint32_t address, uint8_t state) {
+    uint8_t pin = 0;
+
+    // Check address
+    pin = static_cast<uint8_t>(address);
+    if (pin >= 32) {
+        Serial.printf("[MixCore] Pin index %u out of range (0-31)!\n", pin);
+        return;
+    }
+
+    reg.write(pin, state);
+    reg.update();
+
+    Serial.printf("[MixCore] Pump Pin %2u -> %s\n", pin, state ? "ON" : "OFF");
 }
 
 // OTHER //
