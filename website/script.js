@@ -23,6 +23,22 @@ function requestFullscreen() {
         el.webkitRequestFullscreen();
     }
 }
+async function requestWakeLock() {
+    if ('wakeLock' in navigator) {
+      try {
+        wakeLock = await navigator.wakeLock.request('screen');
+        console.log('[WakeLock] Screen blocked');
+  
+        wakeLock.addEventListener('release', () => {
+          console.log('[WakeLock] Block released');
+        });
+      } catch (err) {
+        console.error(`[WakeLock] Error: ${err.name}, ${err.message}`);
+      }
+    } else {
+      console.warn('[WakeLock] API is not supported by your browser');
+    }
+}
 
 function monitorKey() {
     const keyCookie = getCookie("groq_api_key") || "";
@@ -336,6 +352,8 @@ if (keyInput) {
     });
 }
 
+let wakeLock = null;
+
 // Main event listeners
 document.getElementById("btn-mic")?.addEventListener("click", async () => {
     assistant.handleAssistantClick(); });
@@ -347,13 +365,16 @@ document.getElementById("disconnect-btn")?.addEventListener("click", async () =>
     bridge.disconnect(); });
 
 // Fullscreen button
-document.getElementById("fullscreen-btn").addEventListener("click", requestFullscreen)
+document.getElementById("fullscreen-btn")?.addEventListener("click", async () => {
+    requestFullscreen();
+    requestWakeLock();
+});
 
 // Recipes button
 document.getElementById("btn-recipes")?.addEventListener("click", toggleRecipes);
 document.getElementById("close-recipes-btn")?.addEventListener("click", toggleRecipes);
 
-// Punp test menu button
+// Pump test menu button
 document.getElementById("btn-test")?.addEventListener("click", togglePumpTestMenu);
 document.getElementById("close-test-btn")?.addEventListener("click", togglePumpTestMenu);
 
