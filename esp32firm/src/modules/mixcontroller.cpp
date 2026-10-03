@@ -89,7 +89,7 @@ bool MixController::processRecipe() {
             actualAmount *= 0.001f;
         }
 
-        Serial.printf("Code: 0x%02X | Raw Val: %u | Calculated: %.3f\n", code, value, actualAmount);
+        Serial.printf("[MixParser] Code: 0x%02X | Raw Val: %u | Calculated: %.3f\n", code, value, actualAmount);
 
         // Dispense
         dispenseByCode(code, actualAmount);
@@ -100,8 +100,27 @@ bool MixController::processRecipe() {
     return true;
 }
 
-bool MixController::dispenseByCode(uint8_t code, float amountMl){
+bool MixController::dispenseByCode(uint8_t code, float amountMl) {
+    if (amountMl <= 0.0f) {
+        return false;
+    }
 
+    // Calculate pump millis
+    bool isFlavor = (code >= 0x10 && code <= 0x99);
+    float pumpSpeedMlS = isFlavor ? MINI_PUMP_SPEED_MLS : MAIN_PUMP_SPEED_MLS;
+
+    if (pumpSpeedMlS <= 0.0f) {
+        Serial.printf("[MixCore] ERROR: Invalid pump speed for code 0x%02X\n", code);
+        return false;
+    }
+
+    uint32_t pumpMillis = static_cast<uint32_t>((amountMl / pumpSpeedMlS) * 1000.0f);
+
+    // Trigger pump
+    Serial.printf("[MixCore] Pump 0x%02X (%u): %0.3f ml -> set up for %u ms\n", 
+                  code, code, amountMl, pumpMillis);
+
+    return true;
 }
 
 // OTHER //

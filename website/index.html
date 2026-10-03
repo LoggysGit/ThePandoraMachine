@@ -19,7 +19,7 @@
         <header class="app-header">
             <div class="datetime-block">
                 <span id="clock" class="time-text">00:00</span>
-                <span id="date" class="date-text">Mon, Sep 28</span>
+                <span id="date" class="date-text">Mon, Jan 01</span>
             </div>
 
             <div class="header-right">
@@ -43,8 +43,11 @@
                     </svg>
                 </button>
 
-                <button id="btn-pumps" class="btn-icon" title="Fullscreen">
-                    TP
+                <button id="btn-test" class="btn-icon" title="Pump Test">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <path d="M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z"/>
+                      <path d="M14.7 10.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.1-3.1a2 2 0 0 0-2.8-2.8l-3.3 2.9z"/>
+                    </svg>
                 </button>
 
                 <button id="btn-settings" class="btn-icon" title="Settings">
@@ -66,6 +69,28 @@
                     </div>
                     <div class="modal-body">
                         <ul class="recipe-list"></ul>
+                    </div>
+                </div>
+            </div>
+
+            <div id="test-modal" class="overlay-modal hidden">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Check pumps</h2>
+                        <button id="close-test-btn" class="close-btn">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="pump-test-section">
+                            <h3 class="pump-test-label">Main pumps</h3>
+                            <div class="main-pump-grid" id="main-pump-grid"></div>
+                        </div>
+                    
+                        <div class="pump-test-divider"></div>
+                    
+                        <div class="pump-test-section">
+                            <h3 class="pump-test-label">Flavour pumps</h3>
+                            <div class="mini-pump-grid" id="mini-pump-grid"></div>
+                        </div>
                     </div>
                 </div>
             </div>

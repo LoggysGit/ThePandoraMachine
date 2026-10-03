@@ -22,6 +22,7 @@ inventory:
     WAT: "Soda water"
     SUG: "Sweet 1:1 sugar solution (1 liter = 620 g of sugar + 620 ml of water)"
     SOR: "Sour 1:10 citric acid solution (1 liter = 100 g of citric acid + 1000 ml of water)"
+    STI: "Still water: without any taste and flavor"
   flavours:
     APL: "Apple"
     RSP: "Raspberry"
@@ -69,7 +70,7 @@ instructions: |
 
   Example of "recipe" string content:
   WAT100\n
-  SUG10,SOR5\n
+  SUG10,SOR5,STI0\n
   APL100,ROM84,ORG40,CHL74\n
   EOF\n
   
@@ -77,6 +78,7 @@ instructions: |
   - Soda water (WAT): 100 to 200 ml [100, 200]
   - Sweet/sugar solution (SUG): 0 to 100 ml [0, 100]
   - Sour/citric acid solution (SOR): 0 to 100 ml [0, 100]
+  - Still water (STI): 0 to 100 ml [0, 100]
   - Any flavour: 0 to 1000 mcl (0 to 1 ml) [0, 1000]
 
   Try to create a truly genuine flavour for each request. You must consider solutions' concentrations and a specific flavour's strength.

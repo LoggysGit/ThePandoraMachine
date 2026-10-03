@@ -84,16 +84,73 @@ function animateSpeech(text) {
     if (el) el.textContent = text;
 }
 
+// Test menu builder
+
+function buildPumpTestGrids(bridge) {
+    buildMainPumpRow(bridge);
+    buildMiniPumpGrid(bridge);
+}
+
+function buildMainPumpRow(bridge) {
+    const grid = document.getElementById("main-pump-grid");
+    if (!grid || grid.children.length > 0) return;
+
+    const mainPumps = [
+        { code: "WAT", label: "Soda Water" },
+        { code: "SUG", label: "Sugar solution" },
+        { code: "SOR", label: "Sour solution" },
+        { code: "STI", label: "Still Water" },
+    ];
+
+    mainPumps.forEach(({ code, label }) => {
+        const btn = document.createElement("button");
+        btn.className = "pump-test-btn main-pump-btn";
+        btn.textContent = label;
+        btn.dataset.pumpCode = code;
+        btn.addEventListener("click", () => bridge.testPump(code));
+
+        grid.appendChild(btn);
+    });
+}
+
+function buildMiniPumpGrid(bridge) {
+    const grid = document.getElementById("mini-pump-grid");
+    if (!grid || grid.children.length > 0) return;
+
+    const rowLayout = [
+        [6, 5, 4, 3, 2, 1],
+        [12, 11, 10, 9, 8, 7],
+        [13, 14, 15, 16, 17, 18],
+        [19, 20, 21, 22, 23, 24],
+    ];
+
+    rowLayout.forEach((row) => {
+        row.forEach((pumpIndex) => {
+            const btn = document.createElement("button");
+            btn.className = "pump-test-btn mini-pump-btn";
+            btn.textContent = pumpIndex;
+            btn.dataset.pumpIndex = pumpIndex;
+            btn.addEventListener("click", () => bridge.testPump("FLV", pumpIndex));
+
+            grid.appendChild(btn);
+        });
+    });
+}
+
 // --- MENU FUNCTIONS --- //
 
-function togglePumpTestMenu(){ }
 function toggleRecipes() {
     const settings = document.getElementById("settings-modal");
+    const test = document.getElementById("test-modal");
     const recipes = document.getElementById("recipes-modal");
 
     if (settings && !settings.classList.contains("hidden")) {
         settings.classList.add("hidden");
     }
+    if (test && !test.classList.contains("hidden")) {
+        test.classList.add("hidden");
+    }
+
     if (recipes) {
         recipes.classList.toggle("hidden");
         if (!recipes.classList.contains("hidden")) {
@@ -101,13 +158,34 @@ function toggleRecipes() {
         }
     }
 }
-function toggleSettings() {
+function togglePumpTestMenu(){
     const settings = document.getElementById("settings-modal");
+    const test = document.getElementById("test-modal");
     const recipes = document.getElementById("recipes-modal");
 
     if (recipes && !recipes.classList.contains("hidden")) {
         recipes.classList.add("hidden");
     }
+    if (settings && !settings.classList.contains("hidden")) {
+        settings.classList.add("hidden");
+    }
+
+    if (test) {
+        test.classList.toggle("hidden");
+    }
+}
+function toggleSettings() {
+    const settings = document.getElementById("settings-modal");
+    const test = document.getElementById("test-modal");
+    const recipes = document.getElementById("recipes-modal");
+
+    if (recipes && !recipes.classList.contains("hidden")) {
+        recipes.classList.add("hidden");
+    }
+    if (test && !test.classList.contains("hidden")) {
+        test.classList.add("hidden");
+    }
+
     if (settings) {
         settings.classList.toggle("hidden");
     }
@@ -129,9 +207,6 @@ function updateConnectionStatus(isConnected) {
       disconnectBtn.disabled = !isConnected;
       bleDot.classList.toggle("disconnected", !isConnected);
     }
-    
-    console.log(document.getElementById("disconnect-btn").disabled);
-    console.log(`updated ${isConnected}.`);
 }
 
 // --- RECIPE FUNCTIONS --- //
@@ -219,8 +294,8 @@ document.getElementById("btn-recipes")?.addEventListener("click", toggleRecipes)
 document.getElementById("close-recipes-btn")?.addEventListener("click", toggleRecipes);
 
 // Punp test menu button
-document.getElementById("btn-pumps")?.addEventListener("click", togglePumpTestMenu);
-document.getElementById("close-pumps-btn")?.addEventListener("click", togglePumpTestMenu);
+document.getElementById("btn-test")?.addEventListener("click", togglePumpTestMenu);
+document.getElementById("close-test-btn")?.addEventListener("click", togglePumpTestMenu);
 
 // Settings button
 document.getElementById("btn-settings")?.addEventListener("click", toggleSettings);
@@ -249,5 +324,5 @@ document.addEventListener("DOMContentLoaded", () => {
 setInterval(updateClock, 1000);
 updateClock();
 
-// Update status
-updateConnectionStatus(false);
+// Load test menu
+buildPumpTestGrids(bridge);

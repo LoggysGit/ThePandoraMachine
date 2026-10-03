@@ -10,6 +10,7 @@ const BYTE_CODES = {
   WAT: 0xaf,
   SUG: 0xa0,
   SOR: 0xa1,
+  STI: 0xa2,
   EOF: 0xef,
 };
 
@@ -35,7 +36,7 @@ export async function loadByteCodes(yamlPath) {
           nextCode += 1;
       }
 
-      console.log("Bytecodes loaded:", BYTE_CODES);
+      console.log("[BLE] Bytecodes loaded:", BYTE_CODES);
       return BYTE_CODES;
   } catch (e) {
       console.error(`[BLE] Error loading byte codes from YAML:`, e);
@@ -113,6 +114,7 @@ export class ESPBridge {
     this.onError = onError || ((e) => console.error("[Bridge]", e));
 
     loadByteCodes(systemPromptPath);
+    this.onChangeConnection(this.isConnected);
   }
 
   isSupported() {
@@ -178,6 +180,42 @@ export class ESPBridge {
   async dispenseRecipe(recipeStr) {
     const bytes = convertRecipe(recipeStr);
     return this.send(bytes);
+  }
+
+  async testPump(pumpCode, pumpIndex = null) {
+    const payload = [];
+    const mainPumps = ["WAT", "SUG", "SOR", "STI"];
+
+    // Main pumps
+    mainPumps.forEach((code, i) => {
+        const val = code === pumpCode ? 100 : 0;
+
+        payload.push(BYTE_CODES[code]);
+        payload.push((val >> 8) & 0xff);
+        payload.push(val & 0xff);
+
+        if (i < mainPumps.length - 1) {
+            payload.push(GROUP_SEPARATOR);
+        }
+    });
+
+    // Flavor
+    if (pumpCode === "FLV" && pumpIndex !== null) {
+        const flavourByte = 0x10 + (pumpIndex - 1);
+
+        payload.push(GROUP_SEPARATOR);
+        payload.push(flavourByte);
+        payload.push((100 >> 8) & 0xff);
+        payload.push(100 & 0xff);
+    }
+
+    // CRC + EOF
+    const checksum = crc16Modbus(payload);
+    payload.push((checksum >> 8) & 0xff);
+    payload.push(checksum & 0xff);
+    payload.push(BYTE_CODES.EOF);
+
+    return this.send(new Uint8Array(payload));
   }
 
   async disconnect() {

@@ -480,6 +480,84 @@ input:checked + .slider:before {
     background-color: var(--primary-neon);
 }
 
+/* ================= PUMP TEST MODAL ================= */
+
+.pump-test-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.pump-test-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.pump-test-divider {
+    height: 1px;
+    background: var(--border-color);
+    margin: 4px 0;
+}
+
+.main-pump-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+}
+
+.mini-pump-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    gap: 8px;
+}
+
+.pump-test-btn {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid var(--border-color);
+    color: var(--text-main);
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    font-family: var(--font-sans);
+    transition: background 0.2s ease, border-color 0.2s ease, transform 0.1s ease;
+}
+
+.pump-test-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-neon);
+}
+
+.pump-test-btn:active {
+    transform: scale(0.95);
+    background: linear-gradient(135deg, var(--primary-neon), var(--accent-purple));
+}
+
+.main-pump-btn {
+    padding: 14px 10px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.mini-pump-btn {
+    aspect-ratio: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    font-weight: 700;
+}
+
+.pump-test-btn.testing {
+    background: linear-gradient(135deg, var(--primary-neon), var(--accent-purple));
+    border-color: var(--primary-neon);
+    box-shadow: 0 0 16px var(--primary-glow);
+    pointer-events: none;
+}
+
 /* ================= BOTTOM ZONE ================= */
 
 .bottom-zone {
