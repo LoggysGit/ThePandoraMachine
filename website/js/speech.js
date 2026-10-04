@@ -51,7 +51,9 @@ export class SpeechListener {
 
     this.autoStopTimer = setTimeout(() => {
       if (this.isRecording) this._stopRecording();
-    }, 30_000);
+    }, 20_000);
+
+    console.log("[SpeechListener] Audio started. Listening...")
   }
 
   async _stopRecording() {
@@ -74,6 +76,8 @@ export class SpeechListener {
     }
     console.log("[SpeechListener] Audio stopped. Trancribing...")
     const blob = new Blob(this.audioChunks, { type: "audio/webm" });
+    this.audioChunks = [];
+    
     await this._transcribe(blob);
   }
 
